@@ -5,7 +5,7 @@
 #'
 #' @param df Dataframe
 #' @param column_name Column name to validate
-#' @import gamlssr
+#' @import gamlss
 #' @import rstanarm
 #' @import dplyr
 #' @import tibble
