@@ -117,7 +117,6 @@ anaylse_trials<-
             adjterms=adjterms,
             formula=formula,
             data=X
-
           ) ->
             dict1
           print('dictionary created')

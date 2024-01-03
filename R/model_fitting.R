@@ -50,7 +50,7 @@ model_dict <-
 
     assertthat::assert_that(length(keyterms)==1,msg='Key Term Arg Missing')
 
-    key_val = validate_column(X,keyterms)
+    key_val = validate_column(data,keyterms)
 
     assertthat::assert_that(key_val==TRUE,msg='Key Term Missing')
     assertthat::assert_that(sum(grepl(keyterms,formula))==1,msg='Key Term not in formula')
