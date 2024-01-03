@@ -96,11 +96,17 @@ anaylse_trials<-
             extract_phyloseq(TSS=TSS,new_si=new_si) ->
             input
 
-          svs<- colnames(input$otu_table)[-1]
+          svs<- colnames((input$otu_table)[-1])
+
+          input$otu_table[is.na(input$otu_table)]<- 0
+
 
           dplyr::bind_cols(
             list(input$otu_table,input$sample_data)
           ) -> X
+
+          # Try this I guess
+          X = na.omit(X)
 
           names(svs) = svs
 
