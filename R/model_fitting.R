@@ -157,8 +157,8 @@ fit_gamlsss_BEZI<-
     )  ->
       mod1
 
-    stepGAIC(mod1, what="sigma", scope=formula(gamlss_results),direction='both') -> mod2
-    stepGAIC(mod2, what="nu", scope=formula(gamlss_results),direction='both') -> gamlss_results
+    stepGAIC(mod1, what="sigma", scope=formula(mod1),direction='both') -> mod2
+    stepGAIC(mod2, what="nu", scope=formula(mod2),direction='both') -> gamlss_results
 
 
     if(gamlss_results$converged){
@@ -201,7 +201,7 @@ fit_gamlsss_NB<-
     )  ->
       mod1
 
-    stepGAIC(mod1, what="sigma", scope=formula(gamlss_results),direction='both') -> gamlss_results
+    stepGAIC(mod1, what="sigma", scope=formula(mod1),direction='both') -> gamlss_results
 
 
     if(gamlss_results$converged){
@@ -243,7 +243,7 @@ fit_gamlsss_ZINBI<-
     ) ->
       mod1
 
-    stepGAIC(mod1, what="sigma", scope=formula(gamlss_results),direction='both') -> gamlss_results
+    stepGAIC(mod1, what="sigma", scope=formula(mod1),direction='both') -> gamlss_results
 
 
     if(gamlss_results$converged){
@@ -284,8 +284,8 @@ fit_gamlsss_BEINF0<-
     ) ->
       mod1
 
-    stepGAIC(mod1, what="sigma", scope=formula(gamlss_results),direction='both') -> mod2
-    stepGAIC(mod2, what="nu", scope=formula(gamlss_results),direction='both') -> gamlss_results
+    stepGAIC(mod1, what="sigma", scope=formula(mod1),direction='both') -> mod2
+    stepGAIC(mod2, what="nu", scope=formula(mod2),direction='both') -> gamlss_results
 
     if(gamlss_results$converged){
 

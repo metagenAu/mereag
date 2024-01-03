@@ -125,6 +125,7 @@ anaylse_trials<-
           gamlsss_by_sv(svs=svs,X=X,model_params=dict1,model_type=model_type) %>%
             left_join(input$tax_table,by='SV') ->
             results
+          print('complete')
           rm(input)
           gc()
           results
