@@ -98,15 +98,17 @@ anaylse_trials<-
 
           svs<- colnames((input$otu_table)[-1])
 
-          input$otu_table[is.na(input$otu_table)]<- 0
+         # input$otu_table[is.na(input$otu_table)]<- 0
 
 
           dplyr::bind_cols(
             list(input$otu_table,input$sample_data)
           ) -> X
 
-          # Try this I guess
-          X = na.omit(X)
+          print(dim(X))
+
+
+         # X = na.omit(X[,c(keyterms,adjterms,svs,'MetagenNumber')])
 
           names(svs) = svs
 
