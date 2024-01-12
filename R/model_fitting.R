@@ -41,7 +41,6 @@ validate_column <- function(df, column_name) {
 #' @param formula Formula string
 #' @param data Model data frame
 #' @param adjterms Adjustment terms
-#' @import gamlss
 #' @return List containing model terms
 #' @export
 model_dict <-
@@ -91,7 +90,8 @@ model_dict <-
 #' @param X Model data frame
 #' @param model_params Model dictionary
 #' @param model_type Model type
-#'
+#' @import gamlss
+#' @import gamlss.dist
 #' @return Data frame with model results for each species
 #' @export
 gamlsss_by_sv<-

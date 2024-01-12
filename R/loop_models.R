@@ -108,7 +108,7 @@ anaylse_trials<-
           print(dim(X))
 
 
-         # X = na.omit(X[,c(keyterms,adjterms,svs,'MetagenNumber')])
+          X = na.omit(X[,c(keyterms,adjterms,svs,'MetagenNumber')])
 
           names(svs) = svs
 
