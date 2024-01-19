@@ -19,14 +19,14 @@
 #' @export
 
 anaylse_trials_sql<-
-  function(trials,keyterms,adjterms,formula,model_type, new_si=NULL){
+  function(trials,keyterms,adjterms,formula,model_type, new_si=NULL,prevalence_threshold=5){
 
  map(trials,
         function(trial){
 
           sql_phyloseq_by_sample(taxa_group = 'bacteria',samples=trial) %>%
             tax_glom('Genus',NArm=FALSE) %>%
-            extract_phyloseq() ->
+            extract_phyloseq(prevalence_threshold=prevalence_threshold) ->
             input
 
           svs<- colnames(input$otu_table)[-1]
@@ -78,7 +78,7 @@ anaylse_trials_sql<-
 #' @export
 
 anaylse_trials<-
-  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,new_si=NULL){
+  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,prevalence_threshold=5,new_si=NULL){
 
     TSS<- TRUE
     if(model_type %in% c('NB','ZINBI')){
@@ -93,7 +93,7 @@ anaylse_trials<-
 
           trial  %>%
             tax_glom('Genus',NArm=FALSE) %>%
-            extract_phyloseq(TSS=TSS,new_si=new_si) ->
+            extract_phyloseq(TSS=TSS,new_si=new_si,prevalence_threshold=prevalence_threshold) ->
             input
 
           svs<- colnames((input$otu_table)[-1])
@@ -157,7 +157,7 @@ anaylse_trials<-
 #'
 #' @export
 anaylse_trials_stan<-
-  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7){
+  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,prevalence_threshold=5){
 
     TSS<- TRUE
     if(model_type %in% c('NB','ZINBI')){
@@ -172,7 +172,7 @@ anaylse_trials_stan<-
 
             trial  %>%
               tax_glom('Genus',NArm=FALSE) %>%
-              extract_phyloseq(TSS=TSS) ->
+              extract_phyloseq(TSS=TSS,prevalence_threshold=prevalence_threshold) ->
               input
 
             svs<- colnames(input$otu_table)[-1]
