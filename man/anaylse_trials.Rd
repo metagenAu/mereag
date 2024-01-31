@@ -11,7 +11,9 @@ anaylse_trials(
   formula,
   model_type = "BEZI",
   cutoff = 7,
-  new_si = NULL
+  prevalence_threshold = 5,
+  new_si = NULL,
+  level = "Genus"
 )
 }
 \arguments{

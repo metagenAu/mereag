@@ -10,7 +10,8 @@ anaylse_trials_sql(
   adjterms,
   formula,
   model_type,
-  new_si = NULL
+  new_si = NULL,
+  prevalence_threshold = 5
 )
 }
 \arguments{

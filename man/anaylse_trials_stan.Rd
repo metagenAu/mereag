@@ -9,8 +9,9 @@ anaylse_trials_stan(
   keyterms,
   adjterms,
   formula,
-  model_type = "BEZI",
-  cutoff = 7
+  model_type = "NB",
+  cutoff = 7,
+  prevalence_threshold = 5
 )
 }
 \arguments{

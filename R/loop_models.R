@@ -78,7 +78,7 @@ anaylse_trials_sql<-
 #' @export
 
 anaylse_trials<-
-  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,prevalence_threshold=5,new_si=NULL){
+  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,prevalence_threshold=5,new_si=NULL,level='Genus'){
 
     TSS<- TRUE
     if(model_type %in% c('NB','ZINBI')){
@@ -89,10 +89,14 @@ anaylse_trials<-
     map(trials,
         function(trial){
 
+
+
           if(phyloseqSparse::nsamples(trial)> cutoff){
 
+          tryCatch({
+
           trial  %>%
-            tax_glom('Genus',NArm=FALSE) %>%
+            tax_glom(level,NArm=FALSE) %>%
             extract_phyloseq(TSS=TSS,new_si=new_si,prevalence_threshold=prevalence_threshold) ->
             input
 
@@ -128,8 +132,10 @@ anaylse_trials<-
           rm(input)
           gc()
           results
-          }
-          else{
+
+          },error=function(e)NA)
+
+          }else{
             NA
           }
         }
@@ -157,7 +163,7 @@ anaylse_trials<-
 #'
 #' @export
 anaylse_trials_stan<-
-  function(trials,keyterms,adjterms,formula,model_type='BEZI',cutoff =7,prevalence_threshold=5){
+  function(trials,keyterms,adjterms,formula,model_type='NB',cutoff =7,prevalence_threshold=5){
 
     TSS<- TRUE
     if(model_type %in% c('NB','ZINBI')){
