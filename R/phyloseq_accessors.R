@@ -44,10 +44,12 @@ extract_phyloseq <-
       as.matrix() %>%
       as_tibble(rownames="sampleID") -> otu_df
 
-    physeq %>%
+    tax_df<- NA
+
+    try(physeq %>%
       tax_table() %>%
       as.data.frame()  %>%
-      as_tibble(rownames="SV") -> tax_df
+      as_tibble(rownames="SV") -> tax_df)
 
     physeq %>%
       sample_data() %>%

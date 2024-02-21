@@ -163,10 +163,18 @@ anaylse_trials<-
 #'
 #' @export
 anaylse_trials_stan<-
-  function(trials,keyterms,adjterms,formula,model_type='NB',cutoff =7,prevalence_threshold=5){
+  function(trials,
+           keyterms,
+           adjterms,
+           formula,
+           model_type='NB',
+           cutoff =3,
+           prevalence_threshold=5,
+           glom=TRUE,
+           se=TRUE){
 
     TSS<- TRUE
-    if(model_type %in% c('NB','ZINBI')){
+    if(model_type %in% c('NB','ZINBI','gamma')){
       TSS<- FALSE
     }
 
@@ -176,10 +184,20 @@ anaylse_trials_stan<-
 
           if(phyloseqSparse::nsamples(trial)> cutoff){
 
+            if(glom){
+
             trial  %>%
               tax_glom('Genus',NArm=FALSE) %>%
               extract_phyloseq(TSS=TSS,prevalence_threshold=prevalence_threshold) ->
               input
+
+            } else{
+
+              trial  %>%
+                extract_phyloseq(TSS=TSS,prevalence_threshold=prevalence_threshold) ->
+                input
+
+            }
 
             svs<- colnames(input$otu_table)[-1]
 
@@ -199,7 +217,7 @@ anaylse_trials_stan<-
               dict1
             print('dictionary created')
 
-            stan_by_sv(svs=svs,X=X,model_params=dict1,model_type=model_type) %>%
+            stan_by_sv(svs=svs,X=X,model_params=dict1,model_type=model_type,se=se) %>%
               left_join(input$tax_table,by='SV') ->
               results
             rm(input)

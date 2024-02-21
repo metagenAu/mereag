@@ -62,7 +62,7 @@ calc_meta_effect <-
 #' # Example usage
 #' # run_metareg(results = list_of_study_results, sm = 'RR')
 run_metareg<-
-  function(results,sm ='OR'){
+  function(results,sm ='RR'){
 
     do.call('rbind',results) -> results_df
     column_names <- c("Phylum", "Class", "Order", "Family", "Genus")
@@ -84,7 +84,7 @@ run_metareg<-
       results_df %>%
         filter(ModelTerm=='TreatmentMetagen') %>%
         filter(tax_id %in% gene) %>%
-        calc_meta_effect2(sm=sm ) -> meta1
+        calc_meta_effect(sm=sm ) -> meta1
 
       meta_res[[gene]]<- meta1
 
@@ -105,14 +105,16 @@ run_metareg<-
 #' @examples
 #' # Example usage
 #' # calc_bayesmeta_effect(x = my_data)
-calc_bayesmeta_effect <- function(x) {
+calc_bayesmeta_effect <-
+
+  function(x) {
 
 
   mgen <- tryCatch({
     bayesmeta(y= x$mean,
               sigma = x$se,
               label = x$study,
-              mu.prior.mean=0, mu.prior.sd=3) %>%
+              mu.prior.mean=0, mu.prior.sd=1) %>%
       .$summary %>%
       as.data.frame()
   }, error = function(e) NA)

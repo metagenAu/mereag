@@ -9,7 +9,6 @@ posterior_effect<-
       tibble::rownames_to_column(var='ModelTerm') %>%
       filter(grepl(eff_col,ModelTerm))->
       df1
-    #bayestestR::ci()
 
     posteriors<- as.matrix(x)
 
@@ -45,7 +44,7 @@ posterior_effectSize<-
   }
 
 fit_stan_NB<-
-  function(X,y,the_formula,key_term,seed=123){
+  function(X,y,the_formula,key_term,seed=123,se=TRUE){
 
     stan_glm( the_formula,
 
@@ -53,32 +52,47 @@ fit_stan_NB<-
            family = neg_binomial_2(),
            prior_intercept = normal(0, 1, autoscale = TRUE),
            prior = normal(0, 1, autoscale = TRUE),
-           seed=seed) %>%
+           seed=seed) ->
+      glm1
+
+    if(se){
+     glm1 %>%
       posterior_effectSize(eff_col= key_term) %>%
       return()
-
+    }
+    glm1 %>%
+      posterior_effect(eff_col= key_term) %>%
+      return()
   }
 
 
 
 fit_stan_gamma<-
-  function(X,y,the_formula,key_term,seed=123){
+  function(X,y,the_formula,key_term,seed=123,se=TRUE){
 
     stan_glm( the_formula,
 
               data = X,
-              family = Gamma,
+              family = Gamma(link='log'),
               prior_intercept = normal(0, 1, autoscale = TRUE),
               prior = normal(0, 1, autoscale = TRUE),
-              seed=seed) %>%
-      posterior_effectSize(eff_col= key_term) %>%
+              seed=seed)   ->
+      glm1
+
+    if(se){
+      glm1 %>%
+        posterior_effectSize(eff_col= key_term) %>%
+        return()
+    }
+    glm1 %>%
+      posterior_effect(eff_col= key_term) %>%
       return()
 
   }
 
 
 stan_by_sv<-
-  function(svs,X,model_params,model_type='BEZI'){
+  function(svs,X,model_params,model_type='NB',se=TRUE){
 
 
     base = model_params$formula
@@ -100,7 +114,7 @@ stan_by_sv<-
              X=X,
              y='%s',
              the_formula = formula(paste0(sv,base)),
-             key_term= key_term,
+             key_term= key_term,se=se
              )",model_type,sv)
 
         eval(parse(text=model_call))
