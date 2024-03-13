@@ -143,25 +143,7 @@ anaylse_trials<-
 
   }
 
-#' Analyze microbiome trials using rstanarm and GAMLSS
-#'
-#' @param trials A list of phyloseqSparse objects representing trials
-#' @param keyterms Key terms for model formula
-#' @param adjterms Adjustment terms for model formula
-#' @param formula Formula as string
-#' @param model_type Model type, options are "NB", "ZINB", etc.
-#' @param cutoff Minimum sample size cutoff, trials below cutoff return NA
-#'
-#' @return A list of data frames with model results for each trial
-#'
-#' @examples
-#' trials <- list(trial1_ps, trial2_ps)
-#' results <- anaylse_trials_stan(trials, keyterms = "GroupName",
-#'                                adjterms = "~ Age + BMI",
-#'                                formula = "Abundance ~ GroupName",
-#'                                model_type = "ZINB")
-#'
-#' @export
+
 anaylse_trials_stan<-
   function(trials,
            keyterms,
@@ -183,6 +165,8 @@ anaylse_trials_stan<-
         function(trial){
 
           if(phyloseqSparse::nsamples(trial)> cutoff){
+
+           # tryCatch({
 
             if(glom){
 
@@ -217,12 +201,14 @@ anaylse_trials_stan<-
               dict1
             print('dictionary created')
 
-            stan_by_sv(svs=svs,X=X,model_params=dict1,model_type=model_type,se=se) %>%
-              left_join(input$tax_table,by='SV') ->
+            stan_by_sv(svs=svs,X=X,model_params=dict1,model_type=model_type,se=se) ->
               results
             rm(input)
             gc()
             results
+
+           # },error=function(e)NA)
+
           }
           else{
             NA
@@ -231,3 +217,6 @@ anaylse_trials_stan<-
     ) -> results
 
   }
+
+##
+

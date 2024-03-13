@@ -106,7 +106,7 @@ stan_by_sv<-
     counts$Freq %>% mean() -> av_n
     counts$Freq %>% sd() -> sd_n
     key_term= model_params$keyterms
-    purrr::map_df(
+    purrr::map(
       svs,
       function(sv){
         model_call =
@@ -116,11 +116,15 @@ stan_by_sv<-
              the_formula = formula(paste0(sv,base)),
              key_term= key_term,se=se
              )",model_type,sv)
+       # eval(parse(text=model_call))
+       eval(parse(text=model_call))
 
-        eval(parse(text=model_call))
-
-      },.id='SV')->
+      })->
       res
+
+    res = res[!is.na(res)]
+    map_df(res,~return(.x),.id='SV') -> res
+
     res$av_n<- av_n
     res$sd_n <- sd_n
 
