@@ -1,3 +1,16 @@
+library(dplyr)  # for data manipulation
+
+# Define a function to check and rename columns if needed
+preprocess_data <- function(data) {
+  if (!"Estimate" %in% names(data) && "mean" %in% names(data)) {
+    data <- rename(data, Estimate = mean)
+  }
+  if (!"Std. Error" %in% names(data) && "sd" %in% names(data)) {
+    data <- rename(data, `Std. Error` = sd)
+  }
+  return(data)
+}
+
 
 posterior_effect<-
   function(x,
@@ -34,10 +47,10 @@ posterior_effectSize<-
     posteriors<- as.matrix(x)
     df1 = data.frame(
       ModelTerm=names(fixef(x)),
-      mean= fixef(x),
-      se=se(x))
+      Estimate= fixef(x),
+      `Std. Error`=se(x))
     effect= posteriors[,colnames(posteriors) %in% eff_col] %>% as.vector()
-    #df1$intercept= x$stan_summary[1,1]
+    df1$intercept= x$stan_summary[1,1]
     df1$p_coef = sum(effect>0)/length(effect)
     df1
 
@@ -47,7 +60,6 @@ fit_stan_NB<-
   function(X,y,the_formula,key_term,seed=123,se=TRUE){
 
     stan_glm( the_formula,
-
            data = X,
            family = neg_binomial_2(),
            prior_intercept = normal(0, 1, autoscale = TRUE),

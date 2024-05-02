@@ -153,7 +153,8 @@ anaylse_trials_stan<-
            cutoff =3,
            prevalence_threshold=5,
            glom=TRUE,
-           se=TRUE){
+           se=TRUE,
+           level='Genus'){
 
     TSS<- TRUE
     if(model_type %in% c('NB','ZINBI','gamma')){
@@ -171,7 +172,7 @@ anaylse_trials_stan<-
             if(glom){
 
             trial  %>%
-              tax_glom('Genus',NArm=FALSE) %>%
+              tax_glom(level,NArm=FALSE) %>%
               extract_phyloseq(TSS=TSS,prevalence_threshold=prevalence_threshold) ->
               input
 
