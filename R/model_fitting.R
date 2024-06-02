@@ -43,43 +43,86 @@ validate_column <- function(df, column_name) {
 #' @param adjterms Adjustment terms
 #' @return List containing model terms
 #' @export
-model_dict <-
+model_dict <- function(keyterms, formula, data, adjterms = NULL) {
+  assert_that(length(keyterms) == 1, msg = 'Key Term Arg Missing')
 
-  function(keyterms,formula,data,adjterms=NULL){
+  key_val <- validate_column(data, keyterms)
+  assert_that(key_val == TRUE, msg = 'Key Term Missing')
 
-    assertthat::assert_that(length(keyterms)==1,msg='Key Term Arg Missing')
+  # Check if the formula contains '~'
 
-    key_val = validate_column(data,keyterms)
+  if (!is.null(adjterms)) {
+    sapply(adjterms, function(x) validate_column(data, x)) -> adj_val
+    assert_that(sum(adj_val) == length(adjterms), msg = 'Adj Term Missing from dataset')
+    sapply(adjterms, function(x) grepl(x, formula)) -> adj_val_form
+    assert_that(sum(adj_val_form) == length(adjterms), msg = 'One or more adj terms not in formula')
 
-    assertthat::assert_that(key_val==TRUE,msg='Key Term Missing')
-    assertthat::assert_that(sum(grepl(keyterms,formula))==1,msg='Key Term not in formula')
-
-    if(!is.null(adjterms)){
-      sapply(adjterms,function(x)validate_column(data,x)) -> adj_val
-      assertthat::assert_that(sum(adj_val) == length(adjterms),msg='Adj Term Missing from dataset')
-      sapply(adjterms,function(x)grepl(x,formula)) -> adj_val_form
-      assertthat::assert_that(sum(adj_val_form)==length(adjterms),msg='One or more adj terms not in formula')
-
-
-      list(keyterms=keyterms,
-           adjterms=adjterms,
-           formula=formula) %>%
-        return()
-
-    }else{
-
-      warning('no Adj term detected. Check your data set is correct.')
-
-
-      list(keyterms=keyterms,
-           adjterms=NA,
-           formula=formula)%>%
-        return()
-
+    # Define a function to check if a column is a character or factor with the required criteria
+    check_column <- function(column) {
+      if (is.character(column) || is.factor(column)) {
+        unique_values <- unique(column)
+        if (length(unique_values) >= 2) {
+          counts <- table(column)
+          if (all(counts >= 3)) {
+            return(TRUE)
+          }
+        }
+        return(FALSE)
+      }
+      return(TRUE)
     }
 
-  }
+    # Function to check if terms in the formula are valid
+    check_term <- function(term, valid_columns) {
+      if (term %in% valid_columns) {
+        return(TRUE)
+      } else if (grepl("\\*", term)) {  # Check for interaction terms using *
+        interaction_terms <- unlist(strsplit(term, "\\*"))
+        return(all(interaction_terms %in% valid_columns))
+      }
+      return(FALSE)
+    }
 
+    # Get the terms from the original formula
+    original_terms <- all.vars(as.formula(formula))
+
+    # Filter the columns in adjterms based on the criteria
+    valid_columns <- names(data)[sapply(data[adjterms], check_column)]
+
+    # Get the terms and interactions from the formula
+    terms_obj <- terms(as.formula(formula))
+    term_labels <- attr(terms_obj, "term.labels")
+
+    # Check each term and preserve valid ones including interactions
+    valid_terms <- sapply(term_labels, check_term, valid_columns = valid_columns)
+
+    # Create the filtered formula
+    valid_term_labels <- term_labels[valid_terms]
+    predictors <- paste(valid_term_labels, collapse = " + ")
+    if(nchar(predictors)>0){
+      predictors <- paste0(keyterms ,'+' , predictors)
+      print(predictors)
+    }else{
+      predictors<- keyterms
+
+    }
+    updated_formula <- as.formula(paste("~", predictors,'+offset(seq)'))
+
+
+    list(keyterms = keyterms,
+         adjterms = adjterms,
+         formula = updated_formula) %>%
+      return()
+
+  } else {
+    warning('No Adj term detected. Check your data set is correct.')
+
+    list(keyterms = keyterms,
+         adjterms = NA,
+         formula = formula) %>%
+      return()
+  }
+}
 
 
 #' Fit GAMLSS Model By Species

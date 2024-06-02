@@ -40,8 +40,8 @@ posterior_effectSize<-
 
     x$stan_summary %>%
       as.data.frame %>%
-      tibble::rownames_to_column(var='ModelTerm') %>%
-      filter(grepl(eff_col,ModelTerm))->
+      tibble::rownames_to_column(var='ModelTerm') -> # %>%
+      #filter(grepl(eff_col,ModelTerm))->
       df1
     #bayestestR::ci()
     posteriors<- as.matrix(x)
@@ -49,9 +49,9 @@ posterior_effectSize<-
       ModelTerm=names(fixef(x)),
       Estimate= fixef(x),
       `Std. Error`=se(x))
-    effect= posteriors[,colnames(posteriors) %in% eff_col] %>% as.vector()
-    df1$intercept= x$stan_summary[1,1]
-    df1$p_coef = sum(effect>0)/length(effect)
+   # effect= posteriors[,colnames(posteriors) %in% eff_col] %>% as.vector()
+   # df1$intercept= x$stan_summary[1,1]
+   # df1$p_coef = sum(effect>0)/length(effect)
     df1
 
   }
